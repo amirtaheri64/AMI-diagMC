@@ -191,17 +191,17 @@ def add_int_line(G):
   #print 'visited = ', G.vs['visited']
   #print 'F_or_B = ', G.es['F_or_B']
   #print 'INT_or_EXT = ', G.es["INT_or_EXT"]
-  order_new=(G.vcount()-1)/2
-  G.es["Label"] = [[None]*(order_new+1)]*(3*order_new+1)  # Define "None" labels
-  for i in range(0,G.vcount()):
-    if len(G.neighbors(i))==1:
-      x=G.neighbors(i,'OUT')
+  #order_new=(G.vcount()-1)/2
+  #G.es["Label"] = [[None]*(order_new+1)]*(3*order_new+1)  # Define "None" labels
+  #for i in range(0,G.vcount()):
+    #if len(G.neighbors(i))==1:
+      #x=G.neighbors(i,'OUT')
       
-      if len(x)==1:
-        G.es[G.get_eid(i,x[0])]['INT_or_EXT'] = 0 
-      else:
-        x=G.neighbors(i,'IN')
-        G.es[G.get_eid(x[0],i)]['INT_or_EXT'] = 0      
+      #if len(x)==1:
+        #G.es[G.get_eid(i,x[0])]['INT_or_EXT'] = 0 
+      #else:
+        #x=G.neighbors(i,'IN')
+        #G.es[G.get_eid(x[0],i)]['INT_or_EXT'] = 0      
       #G.es[G.adjacent(i)]['INT_or_EXT'] = 0  
   return G
 #End
@@ -271,9 +271,10 @@ def remove_int_line(G):
     #print 'In neighbors of V1 =', n1_IN
     #print 'V1 = ', V1
     
-    
+    s1=0
     for i in range (0,len(n1_IN)):
       G.delete_edges(G.get_eid(n1_IN[i],V1))  # Remove adjacent ingoing edges of V1
+      s1=s1+1
     #print 'Diagram after deleting f-lines connected to V1 = ', G
     #print 'name1 after deleting f-lines connected to V1 = ', G.vs['name1']
     #print 'visited after deleting f-lines connected to V1 = ', G.vs['visited']
@@ -284,22 +285,26 @@ def remove_int_line(G):
     #print 'OUT neighbors of V1 =', n1_OUT
     for i in range (0,len(n1_OUT)):
       G.delete_edges(G.get_eid(V1,n1_OUT[i]))  # Remove adjacent ingoing edges of V1
+      s1=s1+1
+    print 's1 = ', s1
     #print 'Diagram after deleting f-lines connected to V1 = ', G
     #print 'name1 after deleting f-lines connected to V1 = ', G.vs['name1']
     #print 'visited after deleting f-lines connected to V1 = ', G.vs['visited']
     #print 'F_or_B after deleting f-lines connected to V1 = ', G.es['F_or_B']
     #print 'INT_or_EXT after deleting f-lines connected to V1 = ', G.es["INT_or_EXT"]
-    v = [None]*2
-    j = 0
+    v1 = []
+    #j = 0
     for i in range (0,len(n1_IN)):
-      v[j] = n1_IN[i]
-      j = j+1
+      v1.append(n1_IN[i])
     for i in range (0,len(n1_OUT)):
-      v[j] = n1_OUT[i]
-      j = j+1
-    G.add_edges([(v[0],v[1])])  # Add a fermionic line
-    G.es[G.get_eid(v[0],v[1])]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
-    G.es[G.get_eid(v[0],v[1])]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
+      v1.append(n1_OUT[i])
+    if len(v1)==1:
+      v1.append(v1[0])
+    print 'v[0] = ', v1[0]
+    print 'v[1] = ', v1[1]
+    G.add_edges([(v1[0],v1[1])])  # Add a fermionic line
+    G.es[G.get_eid(v1[0],v1[1])]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
+    G.es[G.get_eid(v1[0],v1[1])]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
     #print G
 
 
@@ -307,9 +312,11 @@ def remove_int_line(G):
     #print 'In neighbors of V2 =', n1_IN
     #print 'V2 = ', V2
     
-    
+    s2=0
     for i in range (0,len(n2_IN)):
       G.delete_edges(G.get_eid(n2_IN[i],V2))  # Remove adjacent ingoing edges of V1
+      s2=s2+1
+    
     #print 'Diagram after deleting f-lines connected to V2 = ', G
     #print 'name1 after deleting f-lines connected to V2 = ', G.vs['name1']
     #print 'visited after deleting f-lines connected to V2 = ', G.vs['visited']
@@ -320,47 +327,62 @@ def remove_int_line(G):
     #print 'OUT neighbors of V2 =', n2_OUT
     for i in range (0,len(n2_OUT)):
       G.delete_edges(G.get_eid(V2,n2_OUT[i]))  # Remove adjacent ingoing edges of V1
+      s2=s2+1
+    print 's2 = ', s2
     #print 'Diagram after deleting f-lines connected to V2 = ', G
     #print 'name1 after deleting f-lines connected to V2 = ', G.vs['name1']
     #print 'visited after deleting f-lines connected to V2 = ', G.vs['visited']
     #print 'F_or_B after deleting f-lines connected to V2 = ', G.es['F_or_B']
     #print 'INT_or_EXT after deleting f-lines connected to V2 = ', G.es["INT_or_EXT"]
-    v = [None]*2
-    j = 0
+    v2 = []
+    #j = 0
     for i in range (0,len(n2_IN)):
-      v[j] = n2_IN[i]
-      j = j+1
+      v2.append(n2_IN[i])
+      #j = j+1
     for i in range (0,len(n2_OUT)):
-      v[j] = n2_OUT[i]
-      j = j+1
-    G.add_edges([(v[0],v[1])])  # Add a fermionic line
-    G.es[G.get_eid(v[0],v[1])]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
-    G.es[G.get_eid(v[0],v[1])]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
+      v2.append(n2_OUT[i])
+      #j = j+1
+    if len(v2)==1:
+      v2.append(v2[0])
+    G.add_edges([(v2[0],v2[1])])  # Add a fermionic line
+    G.es[G.get_eid(v2[0],v2[1])]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
+    G.es[G.get_eid(v2[0],v2[1])]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
     #print G
-    G.delete_vertices(V1)
-    if V1<V2:
-      G.delete_vertices(V2-1)
-    else:
-      G.delete_vertices(V2) 
-    for i in range (0,G.vcount()):
-      G.vs[i]['name1'] = str(i)
+    if s1==1:
+      G.delete_vertices(V2)
+    if s2==1:
+      G.delete_vertices(V1)
+    if s1==2 and s2==2:
+      G.delete_vertices(V1)
+      if V1<V2:
+        G.delete_vertices(V2-1)
+      else:
+        G.delete_vertices(V2) 
+    #for i in range (0,G.vcount()):
+      #G.vs[i]['name1'] = str(i)
     #print 'Final Diagram = ', G
     #print 'Final name1 = ', G.vs['name1']
     #print 'Final visited = ', G.vs['visited']
     #print 'Final F_or_B = ', G.es['F_or_B']
     #print 'Final INT_or_EXT = ', G.es["INT_or_EXT"]  
-  for i in range(0,G.vcount()):
-    if len(G.neighbors(i))==1:
-      x=G.neighbors(i,'OUT')
+  #for i in range(0,G.vcount()):
+    #if len(G.neighbors(i))==1:
+      #x=G.neighbors(i,'OUT')
       
-      if len(x)==1:
-        G.es[G.get_eid(i,x[0])]['INT_or_EXT'] = 0 
-      else:
-        x=G.neighbors(i,'IN')
-        G.es[G.get_eid(x[0],i)]['INT_or_EXT'] = 0      
+      #if len(x)==1:
+        #G.es[G.get_eid(i,x[0])]['INT_or_EXT'] = 0 
+      #else:
+        #x=G.neighbors(i,'IN')
+        #G.es[G.get_eid(x[0],i)]['INT_or_EXT'] = 0      
       #G.es[G.adjacent(i)]['INT_or_EXT'] = 0  
-  order_new=(G.vcount()-1)/2
-  G.es["Label"] = [[None]*(order_new+1)]*(3*order_new+1)  # Define "None" labels
+  #order_new=(G.vcount()-1)/2
+  #G.es["Label"] = [[None]*(order_new+1)]*(3*order_new+1)  # Define "None" labels
+  for i in range (0,G.vcount()):
+    G.vs[i]["Spin"]=None
+    if len(G.neighbors(i))==1:
+      G.vs[i]['visited']=1
+    else:
+      G.vs[i]['visited']=0 
   return G
  
 #End
@@ -751,28 +773,28 @@ def remove_tad(G,M):
     if x[0]==x[1]:
       tad_list.append(x[0])
   count_tadpole=len(tad_list)
-  print 'count_tadpole = ', count_tadpole
-  print 'tadpol_list = ', tad_list
+  #print 'count_tadpole = ', count_tadpole
+  #print 'tadpol_list = ', tad_list
   if count_tadpole>0:
     tad_index = randint(0,count_tadpole-1)
-    print 'tad_index = ', tad_index
+    #print 'tad_index = ', tad_index
     tad_node = tad_list[tad_index]
     print 'tad_node = ', tad_node
     tad_neigh = G.neighbors(tad_node)
-    print tad_neigh
+    #print tad_neigh
     G.delete_edges(G.get_eid(tad_node,tad_node))
     tad_neigh_in = G.neighbors(tad_node,'IN')
     tad_neigh_out = G.neighbors(tad_node,'OUT')
-    print tad_neigh_in
-    print tad_neigh_out
-    print G
+    #print tad_neigh_in
+    #print tad_neigh_out
+    #print G
     if len(tad_neigh_out)!=0:
       G.delete_edges(G.get_eid(tad_node,tad_neigh_out[0]))
       V=tad_neigh_out[0]
     else:
       G.delete_edges(G.get_eid(tad_neigh_in[0],tad_node))
       V=tad_neigh_in[0]
-    print 'tad_leg = ', V 
+    #print 'tad_leg = ', V 
     V_con=[]
     V_neigh_in = G.neighbors(V,'IN')
     V_neigh_out = G.neighbors(V,'OUT')
@@ -782,18 +804,19 @@ def remove_tad(G,M):
     for i in range (0,len(V_neigh_in)):
       G.delete_edges(G.get_eid(V_neigh_in[i],V))
       V_con.append(V_neigh_in[i])
-    print V_con
-    print G
+    #print V_con
+    #print G
     G.add_edges([(V_con[1],V_con[0])])  # Add a fermionic line
     G.es[G.get_eid(V_con[1],V_con[0])]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
     G.es[G.get_eid(V_con[1],V_con[0])]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
-    print G
+    #print G
     G.delete_vertices(tad_node)
     if tad_node<V:
       G.delete_vertices(V-1)
     else:
       G.delete_vertices(V) 
-    print G
+    #print G
+    return G
 #End
 ###################################
 
@@ -853,13 +876,13 @@ def add_bub(G):
 #Begin
 def remove_bub(G):
   bubs = bubble_finder(G)   # Find bubbles
-  print 'bubbles = ', bubs   
+  #print 'bubbles = ', bubs   
   bubble_nodes = bubs[0]   # Bubbles' nodes
   bubble_legs = bubs[1]    # Bubbles' legs
   n_bubble = len(bubble_nodes)/2  # Number of bubbles
-  print 'bubbles_nodes = ', bubble_nodes
-  print 'bubble_legs = ', bubble_legs
-  print 'number of bubbles = ', n_bubble
+  #print 'bubbles_nodes = ', bubble_nodes
+  #print 'bubble_legs = ', bubble_legs
+  #print 'number of bubbles = ', n_bubble
   if n_bubble!=0:
     bubble_choice = randint(0, n_bubble-1) 
     #print 'bubble_choice = ', bubble_choice
@@ -876,7 +899,7 @@ def remove_bub(G):
       G.delete_vertices(Vb_2-1)
     else: 
       G.delete_vertices(Vb_2)
-    print 'After delete bub vertices --> ' , G 
+    #print 'After delete bub vertices --> ' , G 
     NV=G.vcount()
     legs=[]
     for i in range (0,NV):
@@ -887,43 +910,74 @@ def remove_bub(G):
     V_con=[]
 
     Vl1_neigh_out=G.neighbors(Vl_1,'OUT')
-    print 'Vl1_neigh_out = ', Vl1_neigh_out
+    #print 'Vl1_neigh_out = ', Vl1_neigh_out
     for i in range (0,len(Vl1_neigh_out)):
       G.delete_edges(G.get_eid(Vl_1,Vl1_neigh_out[i]))
       V_con.append(Vl1_neigh_out[i])
     
     Vl1_neigh_in=G.neighbors(Vl_1,'IN')
-    print 'Vl1_neigh_in = ', Vl1_neigh_in
+    #print 'Vl1_neigh_in = ', Vl1_neigh_in
     for i in range (0,len(Vl1_neigh_in)):
       G.delete_edges(G.get_eid(Vl1_neigh_in[i],Vl_1))
       V_con.append(Vl1_neigh_in[i])
-
-    print 'V_con_l1 = ', V_con
+    s1=len(V_con)
+    if s1==1:
+      V_con.append(V_con[0])
+      print '************'
+      print '************'
+      print '************'
+      print '************'
+      print '********** V_con[0] = ', V_con[0]
+      print '********** V_con[0] = ', V_con[1]
+      print '************'
+      print '************'
+      print '************'
+      print '************'
+    #print 'V_con_l1 = ', V_con
     G.add_edges([(V_con[1],V_con[0])])  # Add a fermionic line
     G.es[G.get_eid(V_con[1],V_con[0])]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
     G.es[G.get_eid(V_con[1],V_con[0])]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
 
     V_con=[]
     Vl2_neigh_out=G.neighbors(Vl_2,'OUT')
-    print 'Vl2_neigh_out = ', Vl2_neigh_out
+    #print 'Vl2_neigh_out = ', Vl2_neigh_out
     for i in range (0,len(Vl2_neigh_out)):
       G.delete_edges(G.get_eid(Vl_2,Vl2_neigh_out[i]))
       V_con.append(Vl2_neigh_out[i])
     
     Vl2_neigh_in=G.neighbors(Vl_2,'IN')
-    print 'Vl2_neigh_in = ', Vl2_neigh_in
+    #print 'Vl2_neigh_in = ', Vl2_neigh_in
     for i in range (0,len(Vl2_neigh_in)):
       G.delete_edges(G.get_eid(Vl2_neigh_in[i],Vl_2))
       V_con.append(Vl2_neigh_in[i])
-    print 'V_con_l1 = ', V_con
+    #print 'V_con_l1 = ', V_con
+    s2=len(V_con)
+    if s2==1:
+      V_con.append(V_con[0]) 
+      print '************'
+      print '************'
+      print '************'
+      print '************'
+      print '********** V_con[0] = ', V_con[0]
+      print '********** V_con[0] = ', V_con[1]
+      print '************'
+      print '************'
+      print '************'
+      print '************'
+      
     G.add_edges([(V_con[1],V_con[0])])  # Add a fermionic line
     G.es[G.get_eid(V_con[1],V_con[0])]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
     G.es[G.get_eid(V_con[1],V_con[0])]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
-    G.delete_vertices(Vl_1)
-    if Vl_1<Vl_2:
-      G.delete_vertices(Vl_2-1)
-    else:
+    if s1==1:
       G.delete_vertices(Vl_2)
+    if s2==1:
+      G.delete_vertices(Vl_1)
+    if s1==2 and s2==2:
+      G.delete_vertices(Vl_1)
+      if Vl_1<Vl_2:
+        G.delete_vertices(Vl_2-1)
+      else:
+        G.delete_vertices(Vl_2)
     return G
 #End
 ###################################
