@@ -2,12 +2,8 @@
 ##########Import Libraries########
 ##################################
 #Begin
-from Label_self import *
 from igraph import *
 from random import *
-from AMI_zero import *
-from Hubbard_like_diagram import *
-from is_connected import *
 import numpy
 #End
 ###################################
@@ -42,7 +38,7 @@ def add_nodes(G):
   pair=[]
   pairs=[]
   for i in range(0,l_f):
-    for j in range(i+1,l_f):
+    for j in range(i,l_f):
       pair.append(i)
       pair.append(j)
       pairs.append(pair)
@@ -56,13 +52,13 @@ def add_nodes(G):
   #print 'f1 = ', f1
   #print 'f2 = ', f2
   V1 = G.get_edgelist()[f_list[f1]][0]  # The first node connected to f1
-  #print 'V1 = ', V1
+  print 'V1 = ', V1
   V2 = G.get_edgelist()[f_list[f1]][1]  # The second node connected to f1
-  #print 'V2 = ', V2
+  print 'V2 = ', V2
   V3 = G.get_edgelist()[f_list[f2]][0]  # The first node connected to f1
-  #print 'V3 = ', V3
+  print 'V3 = ', V3
   V4 = G.get_edgelist()[f_list[f2]][1]  # The second node connected to f1
-  #print 'V4 = ', V4
+  print 'V4 = ', V4
   #print 'Initial diagram = ', G
   #print 'Initial name1 = ', G.vs['name1']
   #print 'Initial visited = ', G.vs['visited']
@@ -187,9 +183,9 @@ def add_int_line(G):
   #print 'Second added node = ', second_node
   #print 'G_final_before_int_line = ', G_imt
   
-  G.add_edges([(first_node,second_node)])     # Add an interaction line between two new nodes
-  G.es[G.get_eid(first_node,second_node)]['F_or_B'] = 0   # Update 'F_or_B' attribute of the new edge
-  G.es[G.get_eid(first_node,second_node)]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
+  G.add_edges([(second_node,first_node)])     # Add an interaction line between two new nodes
+  G.es[G.get_eid(second_node,first_node)]['F_or_B'] = 0   # Update 'F_or_B' attribute of the new edge
+  G.es[G.get_eid(second_node,first_node)]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
   #print 'Final diagram = ', G
   #print 'name1 = ', G.vs['name1']
   #print 'visited = ', G.vs['visited']
@@ -232,14 +228,14 @@ def remove_int_line(G):
   #print legs
   for i in range (0,l):   # Sweep all the lines
     if G.es[i]['F_or_B'] == 0:   # If the line is fermionic
-      V1 = G.get_edgelist()[i][0]  # The first node connected to b
-      V2 = G.get_edgelist()[i][1]  # The second node connected to b
-      flag = True
+      #V1 = G.get_edgelist()[i][0]  # The first node connected to b
+      #V2 = G.get_edgelist()[i][1]  # The second node connected to b
+      #flag = True
       #for j in range(0,len(legs)):
         #if V1==legs[j] or V2==legs[j]:
           #flag = False
-      if flag:
-        l_b = l_b + 1
+      #if flag:
+      l_b = l_b + 1
   if l_b>0:
     #print 'l_b = ', l_b
     b_list = [None]*l_b   # To store the bosonic lines' indices
@@ -259,9 +255,9 @@ def remove_int_line(G):
     b = randint(0,l_b-1)   # Choose one of the bosonic lines randomly
     #print 'b = ', b
     V1 = G.get_edgelist()[b_list[b]][0]  # The first node connected to b
-    #print 'V1 = ', V1
+    print 'V1 = ', V1
     V2 = G.get_edgelist()[b_list[b]][1]  # The second node connected to b
-    #print 'V2 = ', V2
+    print 'V2 = ', V2
     
     G.delete_edges(b_list[b])  # Remove the interaction line
     
@@ -800,6 +796,139 @@ def remove_tad(G,M):
     print G
 #End
 ###################################
+
+###################################
+#####Add an independent bubble#####
+###################################
+#Begin
+def add_bub(G):
+  out1 = add_nodes(G)
+  NV = G.vcount()   # Total number od nodes
+  print NV
+  V1 = out1[1]
+  V2 = V1+1
+  G_imt = out1[0]
+  #print 'First added node = ', V1
+  #print 'Second added node = ', V2
+  #print 'G_final_before_int_line = ', G_imt
+  G.add_vertices(2)  # Add a node
+  #G.vs[NV]['name1'] = NV  # Update 'name1' attribute of the new node
+  G.vs[NV]["visited"] = 0       # Update 'visited' attribute of the new node
+  #G.vs[NV+1]['name1'] = NV+1  # Update 'name1' attribute of the new node
+  G.vs[NV+1]["visited"] = 0       # Update 'visited' attribute of the new node
+  #print 'Diagram after two nodes = ', G
+  #print 'name1 after two nodes = ', G.vs['name1']
+  #print 'visited after two nodes = ', G.vs['visited']
+  #print 'F_or_B after two nodes = ', G.es['F_or_B']
+  #print 'INT_or_EXT after two nodes = ', G.es["INT_or_EXT"]
+  G.add_edges([(V1,NV)])     # Add an interaction line between two new nodes
+  G.es[G.get_eid(V1,NV)]['F_or_B'] = 0   # Update 'F_or_B' attribute of the new edge
+  G.es[G.get_eid(V1,NV)]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
+
+  G.add_edges([(NV+1,V2)])     # Add an interaction line between two new nodes
+  G.es[G.get_eid(NV+1,V2)]['F_or_B'] = 0   # Update 'F_or_B' attribute of the new edge
+  G.es[G.get_eid(NV+1,V2)]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
+
+  G.add_edges([(NV,NV+1)])     # Add first fermionic edge
+  G.es[G.get_eid(NV,NV+1)]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
+  G.es[G.get_eid(NV,NV+1)]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
+
+  G.add_edges([(NV+1,NV)])     # Add first fermionic edge
+  G.es[G.get_eid(NV+1,NV)]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
+  G.es[G.get_eid(NV+1,NV)]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
+
+
+  #print 'Diagram after adding second edge = ', G
+  #print 'name1 after adding second edge = ', G.vs['name1']
+  #print 'visited after adding second edge = ', G.vs['visited']
+  #print 'F_or_B after adding second edge = ', G.es['F_or_B']
+  #print 'INT_or_EXT after adding second edge = ', G.es["INT_or_EXT"] 
+  return G
+#End
+###################################
+
+###################################
+###########Remove a bub############
+###################################
+#Begin
+def remove_bub(G):
+  bubs = bubble_finder(G)   # Find bubbles
+  print 'bubbles = ', bubs   
+  bubble_nodes = bubs[0]   # Bubbles' nodes
+  bubble_legs = bubs[1]    # Bubbles' legs
+  n_bubble = len(bubble_nodes)/2  # Number of bubbles
+  print 'bubbles_nodes = ', bubble_nodes
+  print 'bubble_legs = ', bubble_legs
+  print 'number of bubbles = ', n_bubble
+  if n_bubble!=0:
+    bubble_choice = randint(0, n_bubble-1) 
+    #print 'bubble_choice = ', bubble_choice
+    Vb_1 = bubble_nodes[2*bubble_choice]
+    Vb_2 = bubble_nodes[2*bubble_choice+1]
+    #Vl_1 = bubble_legs[2*bubble_choice]
+    #Vl_2 = bubble_legs[2*bubble_choice+1]
+    print 'Vb_1 = ', Vb_1
+    print 'Vb_2 = ', Vb_2
+    #print 'Vl_1 = ', Vl_1
+    #print 'Vl_2 = ', Vl_2
+    G.delete_vertices(Vb_1)
+    if Vb_1<Vb_2:
+      G.delete_vertices(Vb_2-1)
+    else: 
+      G.delete_vertices(Vb_2)
+    print 'After delete bub vertices --> ' , G 
+    NV=G.vcount()
+    legs=[]
+    for i in range (0,NV):
+      if len(G.neighbors(i))==2:
+        legs.append(i)
+    Vl_1=legs[0]
+    Vl_2=legs[1]
+    V_con=[]
+
+    Vl1_neigh_out=G.neighbors(Vl_1,'OUT')
+    print 'Vl1_neigh_out = ', Vl1_neigh_out
+    for i in range (0,len(Vl1_neigh_out)):
+      G.delete_edges(G.get_eid(Vl_1,Vl1_neigh_out[i]))
+      V_con.append(Vl1_neigh_out[i])
+    
+    Vl1_neigh_in=G.neighbors(Vl_1,'IN')
+    print 'Vl1_neigh_in = ', Vl1_neigh_in
+    for i in range (0,len(Vl1_neigh_in)):
+      G.delete_edges(G.get_eid(Vl1_neigh_in[i],Vl_1))
+      V_con.append(Vl1_neigh_in[i])
+
+    print 'V_con_l1 = ', V_con
+    G.add_edges([(V_con[1],V_con[0])])  # Add a fermionic line
+    G.es[G.get_eid(V_con[1],V_con[0])]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
+    G.es[G.get_eid(V_con[1],V_con[0])]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
+
+    V_con=[]
+    Vl2_neigh_out=G.neighbors(Vl_2,'OUT')
+    print 'Vl2_neigh_out = ', Vl2_neigh_out
+    for i in range (0,len(Vl2_neigh_out)):
+      G.delete_edges(G.get_eid(Vl_2,Vl2_neigh_out[i]))
+      V_con.append(Vl2_neigh_out[i])
+    
+    Vl2_neigh_in=G.neighbors(Vl_2,'IN')
+    print 'Vl2_neigh_in = ', Vl2_neigh_in
+    for i in range (0,len(Vl2_neigh_in)):
+      G.delete_edges(G.get_eid(Vl2_neigh_in[i],Vl_2))
+      V_con.append(Vl2_neigh_in[i])
+    print 'V_con_l1 = ', V_con
+    G.add_edges([(V_con[1],V_con[0])])  # Add a fermionic line
+    G.es[G.get_eid(V_con[1],V_con[0])]['F_or_B'] = 1   # Update 'F_or_B' attribute of the new edge
+    G.es[G.get_eid(V_con[1],V_con[0])]['INT_or_EXT'] = 1   # Update 'INT_or_EXT' attribute of the new edge
+    G.delete_vertices(Vl_1)
+    if Vl_1<Vl_2:
+      G.delete_vertices(Vl_2-1)
+    else:
+      G.delete_vertices(Vl_2)
+    return G
+#End
+###################################
+
+
 '''
 m=2
 g=generate_g_2(m)
